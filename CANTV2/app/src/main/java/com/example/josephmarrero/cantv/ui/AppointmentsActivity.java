@@ -1,4 +1,4 @@
-package com.example.josephmarrero.cantv;
+package com.example.josephmarrero.cantv.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.jimp.LoginActivity;
+import com.example.josephmarrero.cantv.R;
 
 public class AppointmentsActivity extends AppCompatActivity {
 
