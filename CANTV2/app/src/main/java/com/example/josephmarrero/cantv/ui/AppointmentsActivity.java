@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.josephmarrero.cantv.R;
+import com.example.josephmarrero.cantv.data.prefs.SessionPrefs;
 
 public class AppointmentsActivity extends AppCompatActivity {
 
@@ -20,7 +21,7 @@ public class AppointmentsActivity extends AppCompatActivity {
 
 
         // Redirección al Login
-        if (true) {
+        if (!SessionPrefs.get(this).isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;

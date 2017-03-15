@@ -1,19 +1,14 @@
 package com.example.josephmarrero.cantv.ui;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.AsyncTask;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,29 +20,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.josephmarrero.cantv.R;
+import com.example.josephmarrero.cantv.data.api.CantvApi;
+import com.example.josephmarrero.cantv.data.api.model.Affiliate;
+import com.example.josephmarrero.cantv.data.api.model.ApiError;
+import com.example.josephmarrero.cantv.data.api.model.LoginBody;
+import com.example.josephmarrero.cantv.data.prefs.SessionPrefs;
 import com.example.josephmarrero.cantv.ui.AppointmentsActivity;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity  {
 
+    private Retrofit mRestAdapter;
+    private CantvApi mCantvApi;
 
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    /**
-     * Credenciales de pruebas
-     * TODO: remuévelas cuando vayas a implementar una autenticación real.
-     */
-    private static final String DUMMY_USER_ID = "0000000000";
-    private static final String DUMMY_PASSWORD = "dummy_password";
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private ImageView mLogoView;
@@ -62,6 +57,16 @@ public class LoginActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Crear conexión al servicio REST
+        mRestAdapter = new Retrofit.Builder()
+                .baseUrl(CantvApi.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        //...
+            // Crear conexión a la API de CANTV
+        mCantvApi = mRestAdapter.create(CantvApi.class);
+
 
         mLogoView = (ImageView) findViewById(R.id.image_logo);
         mUserIdView = (EditText) findViewById(R.id.user_id);
@@ -103,9 +108,6 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mFloatLabelUserId.setError(null);
@@ -145,11 +147,53 @@ public class LoginActivity extends AppCompatActivity  {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // Mostrar el indicador de carga y luego iniciar la petición asíncrona.
             showProgress(true);
-            mAuthTask = new UserLoginTask(userId, password);
-            mAuthTask.execute((Void) null);
+
+            Call<Affiliate> loginCall = mCantvApi.login(new LoginBody(userId, password));
+            loginCall.enqueue(new Callback<Affiliate>() {
+                @Override
+                public void onResponse(Call<Affiliate> call, Response<Affiliate> response) {
+                    // Mostrar progreso
+                    showProgress(false);
+
+                    // Procesar errores
+                    if (!response.isSuccessful()) {
+                        String error = "Ha ocurrido un error. Contacte al administrador";
+                        if (response.errorBody()
+                                .contentType()
+                                .subtype()
+                                .equals("json")) {
+                            ApiError apiError = ApiError.fromResponseBody(response.errorBody());
+
+                            error = apiError.getMessage();
+                            Log.d("LoginActivity", apiError.getDeveloperMessage());
+                        } else {
+                            try {
+                                // Reportar causas de error no relacionado con la API
+                                Log.d("LoginActivity", response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        showLoginError(error);
+                        return;
+                    }
+
+                    // Guardar afiliado en preferencias
+                    SessionPrefs.get(LoginActivity.this).saveAffiliate(response.body());
+
+                    // Ir a la citas médicas
+                    showAppointmentsScreen();
+                }
+
+                @Override
+                public void onFailure(Call<Affiliate> call, Throwable t) {
+                    showProgress(false);
+                    showLoginError(t.getMessage());
+                }
+            });
         }
     }
 
@@ -162,10 +206,6 @@ public class LoginActivity extends AppCompatActivity  {
         return password.length() > 4;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(boolean show) {
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
 
@@ -175,79 +215,6 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
 
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
-
-        private final String mUserId;
-        private final String mPassword;
-
-        UserLoginTask(String userId, String password) {
-            mUserId = userId;
-            mPassword = password;
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return 4;
-            }
-
-            if (!mUserId.equals(DUMMY_USER_ID)) {
-                return 2;
-            }
-
-            if (!mPassword.equals(DUMMY_PASSWORD)) {
-                return 3;
-            }
-
-            return 1;
-
-        }
-
-        @Override
-        protected void onPostExecute(final Integer success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            switch (success) {
-                case 1:
-                    showAppointmentsScreen();
-                    break;
-                case 2:
-                case 3:
-                    showLoginError("Número de identificación o contraseña inválidos");
-                    break;
-                case 4:
-                    showLoginError(getString(R.string.error_server));
-                    break;
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-
-    }
     private void showAppointmentsScreen() {
         startActivity(new Intent(this, AppointmentsActivity.class));
         finish();
