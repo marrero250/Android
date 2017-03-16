@@ -12,7 +12,7 @@ import com.example.josephmarrero.cantv.data.api.model.Affiliate;
 
 public class SessionPrefs {
 
-    public static final String PREFS_NAME = "SALUDMOCK_PREFS";
+    public static final String PREFS_NAME = "CANTVMOCK_PREFS";
     public static final String PREF_AFFILIATE_ID = "PREF_USER_ID";
     public static final String PREF_AFFILIATE_NAME = "PREF_AFFILIATE_NAME";
     public static final String PREF_AFFILIATE_ADDRESS = "PREF_AFFILIATE_ADDRESS";
