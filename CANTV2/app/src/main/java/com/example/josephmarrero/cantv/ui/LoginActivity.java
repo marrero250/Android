@@ -25,7 +25,6 @@ import com.example.josephmarrero.cantv.data.api.model.Affiliate;
 import com.example.josephmarrero.cantv.data.api.model.ApiError;
 import com.example.josephmarrero.cantv.data.api.model.LoginBody;
 import com.example.josephmarrero.cantv.data.prefs.SessionPrefs;
-import com.example.josephmarrero.cantv.ui.AppointmentsActivity;
 
 import java.io.IOException;
 
@@ -198,7 +197,7 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     private boolean isUserIdValid(String userId) {
-        return userId.length() == 10;
+        return userId.length() >= 5 ;
     }
 
     private boolean isPasswordValid(String password) {
