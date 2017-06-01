@@ -27,7 +27,7 @@ public class SecondActivity extends AppCompatActivity {
         //Tomar los datos del intent
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle !=null && bundle.get("greeter") !=null){
+        if (bundle !=null && bundle.getString("greeter") !=null){
           String greeter = bundle.getString("greeter");
             Toast.makeText(SecondActivity.this, greeter, Toast.LENGTH_SHORT).show();
             textView.setText(greeter);

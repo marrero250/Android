@@ -40,15 +40,31 @@ public class ThirdActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String phoneNumber = editTextPhone.getText().toString();
-                if (phoneNumber != null) {
+                if (phoneNumber != null && !phoneNumber.isEmpty()) {
                     //Comprobar version actual de Android que estamos corriendo.
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_CODE);
+                     //COMPROBAR SI HA ACEPTADO O NO HA ACEPTADO, O NUNCA SE LE HA PREGUNTADO
+                        if (CheckPermission(Manifest.permission.CALL_PHONE)){
+                            //HA ACEPTADO
+                            Intent i = new Intent(Intent.ACTION_CALL, Uri.parse("TEL" + phoneNumber));
+                            if (ActivityCompat.checkSelfPermission(ThirdActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) return;
+                            startActivity(i);
+
+                        }
+                            else {
+                            Toast.makeText(ThirdActivity.this, "You decline the access", Toast.LENGTH_SHORT).show();
+                            // 0 no ha aceptado, o es la primera vez que se le pregunta
+                        }
+                        //   requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_CODE);
                     } else {
                         OlderVersion(phoneNumber);
                     }
 
+                } else {
+                    Toast.makeText(ThirdActivity.this, "Insert a phone number", Toast.LENGTH_SHORT).show();
+
                 }
+
             }
 
             private void OlderVersion(String phoneNumber) {
@@ -56,13 +72,13 @@ public class ThirdActivity extends AppCompatActivity {
                 if (CheckPermission(Manifest.permission.CALL_PHONE)) {
                     startActivity(intentCall);
                 } else {
-
                     Toast.makeText(ThirdActivity.this, "You declined the acces", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -75,12 +91,15 @@ public class ThirdActivity extends AppCompatActivity {
                 int result = grantResults[0];
 
                 if (permission.equals(Manifest.permission.CALL_PHONE)) {
+
                     //Comprobar si ha sido aceptado o denegado la peticion de permiso
                     if (result == PackageManager.PERMISSION_GRANTED) {
                         //Concedio su permiso
                         String phoneNumber = editTextPhone.getText().toString();
                         Intent intentCall = new Intent(Intent.ACTION_CALL, Uri.parse("Tel:" + phoneNumber));
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) return;                        startActivity(intentCall);
+                        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) return;
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)
+                        startActivity(intentCall);
                    }
                      else {
                        //No concedio su permiso
