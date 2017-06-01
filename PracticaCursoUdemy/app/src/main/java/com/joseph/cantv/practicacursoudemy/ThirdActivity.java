@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -49,18 +50,32 @@ public class ThirdActivity extends AppCompatActivity {
                             Intent i = new Intent(Intent.ACTION_CALL, Uri.parse("TEL" + phoneNumber));
                             if (ActivityCompat.checkSelfPermission(ThirdActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) return;
                             startActivity(i);
+                        }
+                        else {
+                            // Ha denegado o es la primera vez que se le pregunta
+                            if (!shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)){
+                                // SI NO SE LE PREGUNTANDO AUN
+                                requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_CODE);
+                            }else {
+                               //Ha denegado
+                                Toast.makeText(ThirdActivity.this, "Please, enable the resquest permission", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                i.addCategory(Intent.CATEGORY_DEFAULT);
+                                i.setData(Uri.parse("package:" + getPackageName()));
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                                startActivity(i);
+                            }
+                        }
 
-                        }
-                            else {
-                            Toast.makeText(ThirdActivity.this, "You decline the access", Toast.LENGTH_SHORT).show();
-                            // 0 no ha aceptado, o es la primera vez que se le pregunta
-                        }
-                        //   requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_CODE);
                     } else {
                         OlderVersion(phoneNumber);
                     }
 
-                } else {
+                }
+                else {
+
                     Toast.makeText(ThirdActivity.this, "Insert a phone number", Toast.LENGTH_SHORT).show();
 
                 }
