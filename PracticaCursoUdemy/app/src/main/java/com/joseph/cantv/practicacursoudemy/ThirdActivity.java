@@ -92,6 +92,23 @@ public class ThirdActivity extends AppCompatActivity {
             }
         });
 
+        //Boton para la direccion web
+
+
+     imgBtnWeb.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             String url = editTextweb.getText().toString();
+            if (url != null && !url.isEmpty()){
+                Intent intentWeb = new Intent();
+                intentWeb.setAction(Intent.ACTION_VIEW);
+                intentWeb.setData(Uri.parse("http://"+ url));
+                startActivity(intentWeb);
+
+            }
+         }
+     });
+
     }
 
 
