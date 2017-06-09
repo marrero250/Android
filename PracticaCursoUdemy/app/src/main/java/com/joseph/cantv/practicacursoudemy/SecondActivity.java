@@ -21,6 +21,9 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
+        //Activar flecha ir atras
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+
         textView = (TextView) findViewById(R.id.textViewMain);
         btnNext = (Button) findViewById(R.id.buttonGoSharing);
 

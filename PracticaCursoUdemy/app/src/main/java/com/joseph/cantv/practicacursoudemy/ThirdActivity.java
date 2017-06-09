@@ -31,6 +31,9 @@ public class ThirdActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_third);
 
+        //Activar flecha ir atras
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+
         editTextPhone = (EditText) findViewById(R.id.editTexPhone);
         editTextWeb = (EditText) findViewById(R.id.editTextWeb);
         imgBtnPhone = (ImageButton) findViewById(R.id.imageButtonPhone);
@@ -109,18 +112,28 @@ public class ThirdActivity extends AppCompatActivity {
                    Intent intentMailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"+email));
                    //Email Completo
                    Intent intentMail = new Intent(Intent.ACTION_VIEW, Uri.parse(email));
-                   intentMail.setType("Plain/Text");
+                   intentMail.setType("plain/text");
                    intentMail.putExtra(Intent.EXTRA_SUBJECT,"Mai's title");
                    intentMail.putExtra(Intent.EXTRA_TEXT, "Hi there, I love MyForm app, but....");
                    intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{"fernandoŋ@gmail.com","antonio@gmail.com"});
-
+                   // startActivity(Intent.createChooser(intentMail,"Elige cliente de correo"));
                    //Telefono 2
                    Intent intentPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("666111222"));
+
                    startActivity(intentPhone);
 
                }
            }
        });
+
+        imgBtnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //abrir camara
+                Intent intentCamara = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intentCamara);
+            }
+        });
     }
 
 

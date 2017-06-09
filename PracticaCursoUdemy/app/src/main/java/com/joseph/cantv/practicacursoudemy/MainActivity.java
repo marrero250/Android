@@ -16,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Forzar y cargar iconos en el Action Bar
+    getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_myicon);
 
    btn = (Button) findViewById(R.id.buttonMain);
 
@@ -24,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Acceder al segundo activity y mandarle un String
                 Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                intent.putExtra("greeter2", GREETER);
+                intent.putExtra("greeter", GREETER);
                 startActivity(intent);
             }
         });
