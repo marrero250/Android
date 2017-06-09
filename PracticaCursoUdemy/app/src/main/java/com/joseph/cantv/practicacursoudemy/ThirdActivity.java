@@ -19,7 +19,7 @@ import android.widget.Toast;
 public class ThirdActivity extends AppCompatActivity {
 
     private EditText editTextPhone;
-    private EditText editTextweb;
+    private EditText editTextWeb;
     private ImageButton imgBtnPhone;
     private ImageButton imgBtnWeb;
     private ImageButton imgBtnCamera;
@@ -32,7 +32,7 @@ public class ThirdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_third);
 
         editTextPhone = (EditText) findViewById(R.id.editTexPhone);
-        editTextweb = (EditText) findViewById(R.id.editTextWeb);
+        editTextWeb = (EditText) findViewById(R.id.editTextWeb);
         imgBtnPhone = (ImageButton) findViewById(R.id.imageButtonPhone);
         imgBtnWeb = (ImageButton) findViewById(R.id.imageButtonWeb);
         imgBtnCamera = (ImageButton) findViewById(R.id.imageButtonCamera);
@@ -91,24 +91,36 @@ public class ThirdActivity extends AppCompatActivity {
                 }
             }
         });
+    //Boton para la direccion web
+       imgBtnWeb.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
 
-        //Boton para la direccion web
+               String url = editTextWeb.getText().toString();
+               String email ="Joseph";
+               if (url != null && !url.isEmpty()){
+                   Intent intentWeb = new Intent();
+                   intentWeb.setAction(Intent.ACTION_VIEW);
+                   intentWeb.setData(Uri.parse("http://"+url));
 
+                    //Contactos
+                    Intent intentContacts = new Intent(Intent.ACTION_VIEW, Uri.parse("content://contacts/people"));
+                    //Email rapido
+                   Intent intentMailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"+email));
+                   //Email Completo
+                   Intent intentMail = new Intent(Intent.ACTION_VIEW, Uri.parse(email));
+                   intentMail.setType("Plain/Text");
+                   intentMail.putExtra(Intent.EXTRA_SUBJECT,"Mai's title");
+                   intentMail.putExtra(Intent.EXTRA_TEXT, "Hi there, I love MyForm app, but....");
+                   intentMail.putExtra(Intent.EXTRA_EMAIL, new String[]{"fernandoŋ@gmail.com","antonio@gmail.com"});
 
-     imgBtnWeb.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             String url = editTextweb.getText().toString();
-            if (url != null && !url.isEmpty()){
-                Intent intentWeb = new Intent();
-                intentWeb.setAction(Intent.ACTION_VIEW);
-                intentWeb.setData(Uri.parse("http://"+ url));
-                startActivity(intentWeb);
+                   //Telefono 2
+                   Intent intentPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("666111222"));
+                   startActivity(intentPhone);
 
-            }
-         }
-     });
-
+               }
+           }
+       });
     }
 
 
