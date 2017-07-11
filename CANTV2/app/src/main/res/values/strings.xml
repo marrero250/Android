@@ -15,4 +15,7 @@
     <string name="error_incorrect_user_id">Número de identificación no registrado</string>
     <string name="error_network">Conexión de red no disponible</string>
     <string name="error_invalid_password">Contraseña inválida</string>
+    <string name="item_1">Perfil</string>
+    <string name="item_2">Facturacion</string>
+    <string name="item_3">Otros</string>
 </resources>
